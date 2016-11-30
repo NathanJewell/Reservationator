@@ -37,6 +37,9 @@ function listener(request, response) {  //big boi function for server handling
         else if (json.event == "addSchedule") {
 
         }
+        else if (json.event == "day") {
+
+        }
         else if (json.event == "getdayinfo") {
             var resJSON = {verified : false};   //initialize json response object
             verifyUserToken(json.token).then( (user) => {   //verify token with google api
@@ -130,7 +133,6 @@ function listener(request, response) {  //big boi function for server handling
                 if(user.verified) {
                     resJSON.verified=true;
                     mongo().then( (db) => {
-                        console.log("here");
                         //TODO should make sure group doesnt allready exist here.
                         db.collection("groups").find({name : json.name}).toArray((err, result) => {
                             console.log(result);
@@ -166,6 +168,79 @@ function listener(request, response) {  //big boi function for server handling
                     });
 
                 }
+            });
+        }
+        else if (json.event == "createresourcetype") {
+             var resJSON = {verified : false, groupCreated : false};
+            verifyUserToken(json.token).then( (user) => {
+                if(user.verified) {
+                    resJSON.verified=true;
+                    mongo().then( (db) => {
+                        //TODO should make sure group doesnt allready exist here.
+                        db.collection("resourcetypes").find({name : json.name}).toArray((err, result) => {
+                            console.log(result);
+                            if(err == null && !result.length)   //if theres not an error and a group with that name was not found
+                            {
+
+                                db.collection("resourcetypes").insertOne(
+                                    new resourceType(json.name, json.group, json.props)
+                                );
+                                resJSON.typeCreated = true;
+                                db.collection("resourcetypes").find({name : json.name}).toArray((err, result) => {
+                                    if(err == null)
+                                    {
+                                        resJSON.type = result;
+                                    }
+                                    else{resJSON.group = "ERROR RETRIEVING TYPE"}
+                                    response.end(JSON.stringify(resJSON));
+                                });
+                            } else {
+                                if(err)
+                                {
+                                    console.log("ERRROROR!!!" + err);
+                                }
+                                response.end(JSON.stringify(resJSON));
+                            }
+
+                        });
+                    });
+
+                }
+            });
+        }
+        else if (json.event == "createresource") {
+            var resJSON = {verified : false, groupCreated : false};
+            verifyUserToken(json.token).then( (user) => {
+                if(user.verified) {
+                    resJSON.verified=true;
+                    mongo().then( (db) => {
+
+                        db.collection("resources").insertOne(
+                            new resourceInstance(json.type, json.group, json.props)
+                        );
+                        resJSON.typeCreated = true;
+                        db.collection("resources").find({name : json.name}).toArray((err, result) => {
+                            if(err == null)
+                            {
+                                resJSON.type = result;
+                            }
+                            else{resJSON.group = "ERROR RETRIEVING TYPE"}
+                            response.end(JSON.stringify(resJSON));
+                        });
+                    });
+                }
+            });
+        }
+        else if (json.event == "getgrouptypes") {
+
+            mongo().then( (db) => {
+                db.collection("resourcetypes").find({group : json.group}).toArray((err, result) => {
+                    if(err) {
+                        console.log("Error finding resources for group.")
+                    } else {
+                        
+                    }
+                });
             });
         }
         else {
