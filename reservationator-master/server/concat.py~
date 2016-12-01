@@ -1,0 +1,10 @@
+filenames = []
+with open('concat.conf') as f:
+	for line in f:
+		filenames.append(line)
+
+with open('nodeMin.js', 'w') as outfile:
+	    for fname in filenames:
+		            with open(fname) as infile:
+				                for line in infile:
+							                outfile.write(line)

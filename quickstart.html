@@ -1,0 +1,106 @@
+<html>
+  <head>
+    <script type="text/javascript">
+
+      var CLIENT_ID = '334723400100-7b4csiuqi7evinsc06ilcbp3qksbg14m.apps.googleusercontent.com';
+	//APIKey
+      var SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
+	  
+	  var vdate = new Date()
+	  vdate.setFullYear(2016,9,19)
+	  //Date to search for  year,month-1,date
+	  var outDate //this has the date and schedule in string format
+
+      function checkAuth() {
+        gapi.auth.authorize(
+          {
+            'client_id': CLIENT_ID,
+            'scope': SCOPES.join(' '),
+            'immediate': true
+          }, handleAuthResult);
+      }
+
+
+      function handleAuthResult(authResult) {
+        var authorizeDiv = document.getElementById('authorize-div');
+        if (authResult && !authResult.error) {
+
+          authorizeDiv.style.display = 'none';
+          loadCalendarApi();
+        } else {
+
+          authorizeDiv.style.display = 'inline';
+        }
+      }
+
+
+      function handleAuthClick(event) {
+        gapi.auth.authorize(
+          {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
+          handleAuthResult);
+        return false;
+      }
+
+
+      function loadCalendarApi() {
+        gapi.client.load('calendar', 'v3', listUpcomingEvents);
+      }
+
+      function listUpcomingEvents() {  //this is where it does stuff
+        var request = gapi.client.calendar.events.list({
+          'calendarId': 'o2tur235ud7inbdm3je330pl4c@group.calendar.google.com',
+          'timeMin': vdate.toISOString(),
+          'showDeleted': false,
+          'singleEvents': true,
+          'maxResults': 10,  //How many events to load 
+          'orderBy': 'startTime'
+        });
+		
+
+        request.execute(function(resp) {
+          var events = resp.items;
+
+          if (events.length > 0) {
+            Loop1:for (i = 0; i < events.length; i++) {
+              var event = events[i];
+              var when = event.start.dateTime;
+              if (!when) {
+               when = event.start.date;
+               }
+			  
+				//finds the firt event that matches the schedule and date. this part is a bit buggy, but it works
+				if(event.summary == ("A") || event.summary == ("B")||event.summary == ("A/Tutor Time") || event.summary == ("B/Tutor Time")||event.summary == ("A/Assembly") || event.summary == ("B/Assembly") || event.summary == ("A/Early Dismissal") || event.summary == ("B/Early Dismissal")){
+				
+					if(((vdate.getFullYear() + '-' + (vdate.getMonth()+1) + '-' + vdate.getDate()).toString) == (event.start.date.toString)){
+
+						outDate = (event.start.date + ' , ' + event.summary).toString()
+						document.write(outDate) //just displaying the output
+						break Loop1
+					}
+				}
+				
+			   
+			  
+            }
+          } else {
+            outDate = ('Date not Specified on Calander');
+			document.write(outDate) //just displaying the output
+          }
+
+        });
+      }
+	
+
+    </script>
+    <script src="https://apis.google.com/js/client.js?onload=checkAuth">
+    </script>
+  </head>
+  <body>
+    <div id="authorize-div" style="display: none">
+      <span>Authorize access to Google Calendar API</span>
+      <button id="authorize-button" onclick="handleAuthClick(event)">
+        Authorize
+      </button>
+    </div>
+  </body>
+</html>

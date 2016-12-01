@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta name="google-signin-client_id" content="795485120668-g9bvskc0h1fgp6v1u2n1ll06otvg6f9g.apps.googleusercontent.com">
+    <title>Reservationator</title>
+  </head>
+  <body>
+    <h1>Pinging server</h1>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    Year: <input type="text" id="year" value="2016">
+    Month: <input type="text" id="month" value="1">
+    Day: <input type="text" id="day" value="1">
+    <ul id="response">Server response will appear here!</ul>
+    <ul id="periods"></ul>
+    <div id="button">Get Server Data</div>
+    <script src="https://apis.google.com/js/platform.js?onload=gapiInit" async defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="FormMaker.js"></script>
+    <script src="client.js"></script>
+</html>
+
+{
+  name : "default",
+  form :
+  {
+    room : "text",
+    description : "multitext"
+    test : "drop:one,two,three"
+    assure : "tf"
+  }
+  defaults :
+  {
+    room : "0",
+    description : "This resource was not completely initialized.",
+    test : "one",
+    assure : false;
+  }
+}

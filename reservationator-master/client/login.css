@@ -1,0 +1,43 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    background-color: 	#D3D3D3;
+    background-image: url("hood.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+h1 {
+    font-size: 80px;
+}
+#title {
+    text-align: center;
+
+}
+
+#groupselection {
+    text-align: center;
+    background-color: black;
+    color:white;
+}
+
+.hidden {
+    display : none;
+}
+
+.selected {
+    background-color: blue;
+    color: red;
+}
+
+ul,ol {
+    list-style: none;
+}
+
+li {
+    padding: 20px;
+}
+
+#admin {
+    background-color: blue;
+}

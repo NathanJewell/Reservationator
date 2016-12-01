@@ -1,0 +1,30 @@
+
+#button {
+    color: white;
+    background-color : blue;
+}
+#button:hover {
+    background-color : black;
+}
+
+.updated {
+    color : green;
+}
+
+
+/*colors for resource availiability*/
+.taken {
+    background-color : #d20000;
+}
+
+.availiable {
+    background-color : #00d200;
+}
+
+.reserved {
+    background-color : #00d2d2;
+}
+
+.limited {
+    background-color : #d26900;
+}

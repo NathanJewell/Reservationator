@@ -1,0 +1,40 @@
+
+"creategroup" :
+    {
+        "event" : "creategroup",
+        "name" : ["text", ["Room_113"]],
+        "description" : ["text"],
+        "restrictive" : ["checkbox", [1]],
+        "Create Group" : ["button", ["makegroupbtn"]]
+    },
+"createresourcetype" :
+    {
+        "event" : "createresourcetype",
+        "name" : ["text", [""]],
+        "description" : ["text"],
+        "properties" : "list thing"
+    }
+
+"createresource" :
+    {
+        "event" : "createresource",
+        "type" : ["text", [""]],
+        "properties" : type.pull properties
+    }
+
+"createschedule" :
+    {
+        "name" : ["text", [""]],
+        "periods" : {
+            "name" : ["text", [""]],
+            "start" : ["text", [""]],
+            "end" : ["text", [""]]
+        }
+    }
+
+"checkresource" :
+    {
+        "ID" : "adsfasdf",
+        "day" : "1/2/2",
+        "period" : "1",
+    }

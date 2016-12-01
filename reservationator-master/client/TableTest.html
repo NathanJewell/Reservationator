@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Table Trial</title>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+</style>
+</head>
+<body>
+
+<h1>Table Example</h1>
+
+
+<table style="width:100%">
+	<tr>
+		<th>Monday</th>
+		<th>Tuesday</th>
+		<th>Wednesday</th>
+		<th>Thursday</th>
+		<th>Friday</th>
+	</tr>
+	
+	<script>
+	
+	
+	
+	
+	var date = 0;
+	var weekLength = 5
+	var startIndex  = 0
+	var days = 28;
+	function incrementDate(times, days)
+	{
+		
+		if (date < days)
+		{
+			date = date+1
+		}
+		if (times > 1)
+		{
+			incrementDate(times-1)
+		}
+	}
+	
+	function capNumList(num, days)
+	{
+		if (num < days && num >= 0)
+		{
+			return numList[num]
+		}
+		
+		else 
+		{
+			return "";
+		}
+	}
+	
+	numList = []
+	for (i = 1; i <= days; i++)
+	{
+		numList.push(i);
+	}
+	for (i = 0; i < days/7 ; i++)
+	{
+		
+		for (k = 0; k < length; k++)
+		{
+			incrementDate(1, days)
+		}
+		
+		document.write("<tr>" + "<td>"+ capNumList(date, days)+ "</td>" + "<td>"+ capNumList(date+1, days) + "</td>"  +
+			"<td>"+ capNumList(date+2, days) + "</td>"  + "<td>"+ capNumList(date+3, days) + "</td>"  + "<td>"+ capNumList(date+4, days) + "</td>"  + "</tr>")
+		incrementDate(2, days)
+		
+	}
+	
+	
+	</script>
+
+</table>
+
+</body>
+
+
+
+</html>
