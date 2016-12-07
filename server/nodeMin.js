@@ -56,8 +56,9 @@ function verifyUserToken(token) {
 }
 var clndr = require('node-calendar');
 
-function resourceType(name, properties) {
+function resourceType(name, group, properties) {
     this.name = "";
+    this.group = "";
     this.properties = properties || {};
 }
 
@@ -190,16 +191,23 @@ function listener(request, response) {  //big boi function for server handling
         else if (json.event == "addSchedule") {
 
         }
+        else if (json.event == "day") {
+
+        }
         else if (json.event == "getdayinfo") {
-            var resJSON = {verified : false};   //initialize json response object
+            var resJSON = {verified : false, success : false};   //initialize json response object
             verifyUserToken(json.token).then( (user) => {   //verify token with google api
                 if (user.verified) {
                     resJSON.verified = true;
                     mongo().then(function(db) {     //create connection with database
                         db.collection("days").find({date : json.ymd}).toArray(function(err, result) {  //retrieve dayta
-                            resJSON.day = JSON.stringify(result[0]);
-                            console.log(resJSON.day);
-                            response.end(JSON.stringify(resJSON));
+                            if(!error && result.length)
+                            {
+                                resJSON.day = JSON.stringify(result[0]);
+                                resJSON.success = true;
+                                response.end(JSON.stringify(resJSON));
+                            } 
+                            //otherwise theres a problem.....
                         });
                     });
                 }
@@ -241,7 +249,7 @@ function listener(request, response) {  //big boi function for server handling
             });
         }
         else if (json.event == "joingroup") {
-            var resJSON = {groupID : json.groupID};
+            var resJSON = {groupID : json.groupID, success : false};
             verifyUserToken(json.token).then( (user) => {   //verify token with google
                 if(user.verified) {
                     resJSON.verified=true;
@@ -251,12 +259,12 @@ function listener(request, response) {  //big boi function for server handling
                             if(err == null && result.length)   //if theres not an error and a group with that name was found
                             {
                                 if ((result[0].users).indexOf(user.sub) > -1) { //check if the user is part of the group
-                                    resJSON.joined = true;
+                                    resJSON.success = true;
                                 } else if (!result.restrictive) {               //check if group allows any user to join
                                     db.collection("groups").update({name : json.groupID}, {$push : {users : user.sub}});
-                                    resJSON.joined = true;
+                                    resJSON.success = true;
                                 } else {                                        //otherwise don't let user join
-                                    resJSON.joined = false;
+                                    
                                 }
                                 //TODO create session or something for user and return group data
                             } else {
@@ -264,7 +272,7 @@ function listener(request, response) {  //big boi function for server handling
                                 {
                                     console.log("ERRROROR!!!" + err);
                                 } else {
-                                    resJSON.joined = false;
+                                    resJSON.success = false;
                                 }
                             }
                             response.end(JSON.stringify(resJSON));
@@ -278,12 +286,11 @@ function listener(request, response) {  //big boi function for server handling
             });
         }
         else if (json.event == "creategroup") {
-            var resJSON = {verified : false, groupCreated : false};
+            var resJSON = {verified : false, success : false};
             verifyUserToken(json.token).then( (user) => {
                 if(user.verified) {
                     resJSON.verified=true;
                     mongo().then( (db) => {
-                        console.log("here");
                         //TODO should make sure group doesnt allready exist here.
                         db.collection("groups").find({name : json.name}).toArray((err, result) => {
                             console.log(result);
@@ -298,7 +305,7 @@ function listener(request, response) {  //big boi function for server handling
                                         users : [user.sub]
                                     }
                                 );
-                                resJSON.groupCreated = true;
+                                resJSON.success = true;
                                 db.collection("groups").find({name : json.group}).toArray((err, result) => {
                                     if(err == null)
                                     {
@@ -321,13 +328,85 @@ function listener(request, response) {  //big boi function for server handling
                 }
             });
         }
+        else if (json.event == "createresourcetype") {
+             var resJSON = {verified : false, success : false};
+            verifyUserToken(json.token).then( (user) => {
+                if(user.verified) {
+                    resJSON.verified=true;
+                    mongo().then( (db) => {
+                        //TODO should make sure group doesnt allready exist here.
+                        db.collection("resourcetypes").find({name : json.name, group : json.group}).toArray((err, result) => {
+                            console.log(result);
+                            if(err == null && !result.length)   //if theres not an error and a type with that name was not found for the group
+                            {
+
+                                db.collection("resourcetypes").insertOne(
+                                    new resourceType(json.name, json.group, json.props)
+                                );
+                                resJSON.typeCreated = true;
+                                db.collection("resourcetypes").find({name : json.name}).toArray((err, result) => {
+                                    if(err == null)
+                                    {
+                                        resJSON.type = result;
+                                    }
+                                    else{resJSON.group = "ERROR RETRIEVING TYPE"}
+                                    response.end(JSON.stringify(resJSON));
+                                });
+                            } else {
+                                if(err)
+                                {
+                                    console.log("ERRROROR!!!" + err);
+                                }
+                                response.end(JSON.stringify(resJSON));
+                            }
+
+                        });
+                    });
+
+                }
+            });
+        }
+        else if (json.event == "createresource") {
+            var resJSON = {verified : false, success : false};
+            verifyUserToken(json.token).then( (user) => {
+                if(user.verified) {
+                    resJSON.verified=true;
+                    mongo().then( (db) => {
+
+                        db.collection("resources").insertOne(
+                            new resourceInstance(json.type, json.group, json.props)
+                        );
+                        resJSON.success = true;
+                        db.collection("resources").find({name : json.name}).toArray((err, result) => {
+                            if(err == null)
+                            {
+                                resJSON.type = result;
+                            }
+                            else{resJSON.group = "ERROR RETRIEVING TYPE"}
+                            response.end(JSON.stringify(resJSON));
+                        });
+                    });
+                }
+            });
+        }
+        else if (json.event == "getgrouptypes") {
+            var resJSON = {verified : false, success : false};
+            mongo().then( (db) => {
+                db.collection("resourcetypes").find({group : json.group}).toArray((err, result) => {
+                    if(err) {
+                        console.log("Error finding resources for group.")
+                    } else {
+                        resJSON.success = true;
+                        resJSON.types = result;
+                    }
+                    response.end(JSON.stringify(resJSON));
+                });
+            });
+        }
         else {
             var resJSON = {"pung" : "true"};
             response.end(JSON.stringify(resJSON));
         }
-
-        //add resource
-        //add resourceType
 
 
   });

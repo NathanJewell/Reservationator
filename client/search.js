@@ -9,7 +9,7 @@ function request(json, successCallback, errorCallback) {
     })
 }
 
-function serializeToJSON(domref) {  
+function serializeToJSON(domref) {
     var fragged = $(domref).serializeArray();
     fragged = fragged.concat(
     $(domref + " input[type=checkbox]").map(
@@ -45,7 +45,7 @@ $("#searchbutton").on("click", () => {
 	req.event = "getavaliability";
 	req.token = $.cookie("id_token");
 	req.group = $.cookie("groupID");
-	request(data, (data) => {
+	request(req, (data) => {
 		var dataJSON = JSON.parse(data);
 		//magic stuff to make calendar happen
 	}, (err) => {

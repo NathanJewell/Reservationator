@@ -1,9 +1,9 @@
-function FormMaker()
+function FormMaker(id)
 {
     this.formStr = ""
     this.createForm = function(formJSON)
     {
-        this.formStr += "<form id=formgen>"
+        this.formStr += "<form id=" + id + ">"
         for (var key in formJSON)   //cycle through JSON keys (representing stuff that will be added to form)
         {
             if (formJSON.hasOwnProperty(key))
@@ -192,10 +192,10 @@ $("#confirmbtn").on("click", function() {
     request(json, function(data) {          //make request to server and recieve data
         var dataJSON = JSON.parse(data);    //parse data string to jso
         console.log(dataJSON);
-        if(dataJSON.joined) {
+        if(dataJSON.success) {
             $.cookie("groupID", dataJSON.groupID);
             $("#message").html("Successfully joined group " + dataJSON.groupID + "!!!");
-            window.location.replace("http://localhost:8080/calendar.html");
+            window.location.replace("http://localhost:8080/search.html");
         } else {
             $("#message").html("Group not found!");
         }
@@ -228,15 +228,36 @@ function appendToken(json) {
 $("#admintoggle").on("click", () => {
     //really should choose action here but for now.....
     var former = new FormMaker();
-    var formJSON =  {
-                    "event" : "creategroup",
-                    "name" : ["text", ["Room_113"]],
-                    "description" : ["text"],
-                    "restrictive" : ["checkbox", [1]],
-                    "Create Group" : ["button", ["makegroupbtn"]]
-                }
+    var formJSON =  //form for making a new group
+    {
+        "event" : "creategroup",
+        "name" : ["text", ["Room_113"]],
+        "description" : ["text"],
+        "restrictive" : ["checkbox", [1]],
+        "Create Group" : ["button", ["makegroupbtn"]]
+    }
+    var formJSON2 = //form for making a new resource type
+    {
+        "event" : "createresourcetype",
+        "name" : ["text", ["name"]],
+        "attributes" : ["text"],
+        "Create Resource Type" : ["button", ["maketypebtn"]]
+    }
+    var formJSON3 = //form for making a resource instance
+    {
+        "event" : "createresourceinstance",
+        "typename" : ["text", ["type"]],
+        "Create Resource" : ["button", ["makeresourcebtn"]]
+    }
+
     var formString = former.createForm(formJSON);
-    $("#adminpane").html(formString);
+    var formString2 = former.createForm(formJSON2);
+    var formString3 = former.createForm(formJSON3)
+    $("#adminpane").append(formString + formString2 + formString3);
+
+    function reqForm(jqobj) {
+        var req = serializeToJSON()
+    }
     $("#makegroupbtn").on("click", ()=> {
         var req = serializeToJSON("#adminpane form");
         req.event = formJSON.event;
@@ -244,13 +265,19 @@ $("#admintoggle").on("click", () => {
         console.log("Request!!! " + req);
         request(req, (data)=> {
             var dataJSON = JSON.parse(data);
-            if(dataJSON.groupCreated) {
+            if(dataJSON.success) {
                 $("#message").html("Created group " + dataJSON.group.name + " succesfully!");
             }
         }, (err) => {
             $("#message").html("Error creating group!");
         });
     });
+    $("#maketypebtn").on("click", ()=> {
+        var req = serialize
+    }
+    $("makeresourcebtn").on("click", ()=> {
+
+    })
 });
 
 
