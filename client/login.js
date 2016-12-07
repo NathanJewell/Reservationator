@@ -1,8 +1,9 @@
-function FormMaker(id)
+function FormMaker()
 {
     this.formStr = ""
-    this.createForm = function(formJSON)
+    this.createForm = function(formJSON, id)
     {
+        this.formStr = "";
         this.formStr += "<form id=" + id + ">"
         for (var key in formJSON)   //cycle through JSON keys (representing stuff that will be added to form)
         {
@@ -226,6 +227,11 @@ function appendToken(json) {
 }
 
 $("#admintoggle").on("click", () => {
+    $("#adminpane").toggleClass("hidden");
+});
+
+
+function setupForms() {
     //really should choose action here but for now.....
     var former = new FormMaker();
     var formJSON =  //form for making a new group
@@ -250,37 +256,37 @@ $("#admintoggle").on("click", () => {
         "Create Resource" : ["button", ["makeresourcebtn"]]
     }
 
-    var formString = former.createForm(formJSON);
-    var formString2 = former.createForm(formJSON2);
-    var formString3 = former.createForm(formJSON3)
+    var formString = former.createForm(formJSON, "makegroup");
+    var formString2 = former.createForm(formJSON2, "maketype");
+    var formString3 = former.createForm(formJSON3, "makeresource")
     $("#adminpane").append(formString + formString2 + formString3);
 
-    function reqForm(jqobj) {
-        var req = serializeToJSON()
-    }
-    $("#makegroupbtn").on("click", ()=> {
-        var req = serializeToJSON("#adminpane form");
-        req.event = formJSON.event;
+    function reqForm(jqobj, json, message, err) {
+        var req = serializeToJSON(jqobj);
+        req.event = json.event;
         appendToken(req);
         console.log("Request!!! " + req);
         request(req, (data)=> {
             var dataJSON = JSON.parse(data);
             if(dataJSON.success) {
-                $("#message").html("Created group " + dataJSON.group.name + " succesfully!");
+                $("#message").html(message);
             }
         }, (err) => {
-            $("#message").html("Error creating group!");
+            $("#message").html("ERROR: " + err);
         });
+    }
+    $("#makegroupbtn").on("click", ()=> {
+        reqForm("#makegroup", formJSON, "created new group", "group not created");
     });
     $("#maketypebtn").on("click", ()=> {
-        var req = serialize
-    }
+        reqForm("#maketype", formJSON2, "created new resource type", "resource type not created");
+    });
     $("makeresourcebtn").on("click", ()=> {
+        reqForm("makeresource", formJSON3, "created new resource instance", "resource instance creation failed");
+    });
+}
 
-    })
-});
-
-
+setupForms();
 
 function onSignIn(googleUser) {
     var auth2 = gapi.auth2.getAuthInstance();
