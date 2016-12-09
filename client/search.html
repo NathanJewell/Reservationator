@@ -7,7 +7,7 @@
 
 <h1>Search Screen</h1>
 
-<form id="searchform"> 
+<form id="searchform">
 	Resource Type:<br>
 	<select id="typeoptions" name="Resource Type">
 		<option>Chromebook Carts</option>
@@ -37,7 +37,10 @@
 	<input type="text" name="Room #">
 	<br>
 	<div id="searchbutton" class="submit">Search</div>
-
+    <div id="admin">
+        <h3 id="admintoggle" class="button">Tools</h3>
+        <div id="adminpane" class="hidden"></div>
+    </div>
 </form>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="cookie.js"></script>

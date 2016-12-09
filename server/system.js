@@ -1,9 +1,13 @@
 var clndr = require('node-calendar');
 
 function resourceType(name, group, properties) {
-    this.name = "";
-    this.group = "";
-    this.properties = properties || {};
+    this.name = name;
+    this.group = group;
+    this.properties = properties;
+    //for(i = 0; i < p.length; i++)
+    //{
+    //    this.properties[p[i]] = "";
+    //}
 }
 
 function resourceInstance(type, name, properties) {

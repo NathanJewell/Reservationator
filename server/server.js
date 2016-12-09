@@ -37,9 +37,6 @@ function listener(request, response) {  //big boi function for server handling
         else if (json.event == "addSchedule") {
 
         }
-        else if (json.event == "day") {
-
-        }
         else if (json.event == "getdayinfo") {
             var resJSON = {verified : false, success : false};   //initialize json response object
             verifyUserToken(json.token).then( (user) => {   //verify token with google api
@@ -52,7 +49,7 @@ function listener(request, response) {  //big boi function for server handling
                                 resJSON.day = JSON.stringify(result[0]);
                                 resJSON.success = true;
                                 response.end(JSON.stringify(resJSON));
-                            } 
+                            }
                             //otherwise theres a problem.....
                         });
                     });
@@ -62,9 +59,6 @@ function listener(request, response) {  //big boi function for server handling
                 console.log("Day retrieval failed!");
                 response.end(JSON.stringify(resJson));
             });
-        }
-        else if (json.event == "resourcetypestatus") {
-            var result = checkResourceTypeStatus(json.year, json.month, json.day)
         }
         else if (json.event == "gapiverify") {
             var resJSON = {verified : false};   //initialize json response object
@@ -110,7 +104,7 @@ function listener(request, response) {  //big boi function for server handling
                                     db.collection("groups").update({name : json.groupID}, {$push : {users : user.sub}});
                                     resJSON.success = true;
                                 } else {                                        //otherwise don't let user join
-                                    
+
                                 }
                                 //TODO create session or something for user and return group data
                             } else {
@@ -182,14 +176,16 @@ function listener(request, response) {  //big boi function for server handling
                     mongo().then( (db) => {
                         //TODO should make sure group doesnt allready exist here.
                         db.collection("resourcetypes").find({name : json.name, group : json.group}).toArray((err, result) => {
-                            console.log(result);
+                            console.log("RES: " + result);
+                            console.log("ERR: " + err);
                             if(err == null && !result.length)   //if theres not an error and a type with that name was not found for the group
                             {
-
+                                //{"name" : json.name, "group" : json.group, "properties": json.properties}
+                                console.log(new resourceType(json.name, json.group, json.properties));
                                 db.collection("resourcetypes").insertOne(
-                                    new resourceType(json.name, json.group, json.props)
+                                    new resourceType(json.name, json.group, json.properties)
                                 );
-                                resJSON.typeCreated = true;
+                                resJSON.success = true;
                                 db.collection("resourcetypes").find({name : json.name}).toArray((err, result) => {
                                     if(err == null)
                                     {
@@ -220,7 +216,7 @@ function listener(request, response) {  //big boi function for server handling
                     mongo().then( (db) => {
 
                         db.collection("resources").insertOne(
-                            new resourceInstance(json.type, json.group, json.props)
+                            new resourceInstance(json.type, json.group, json.properties)
                         );
                         resJSON.success = true;
                         db.collection("resources").find({name : json.name}).toArray((err, result) => {
