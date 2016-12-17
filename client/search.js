@@ -263,7 +263,7 @@ function setupForms() {
         var req = serializeToJSON(jqobj);
         req.event = json.event;
         appendToken(req);
-        req.group = $.cookie("group_id");
+        req.group = $.cookie("groupID");
         console.dir(req);
 
         request(req, (data)=> {

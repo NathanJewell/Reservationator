@@ -174,19 +174,16 @@ function listener(request, response) {  //big boi function for server handling
                 if(user.verified) {
                     resJSON.verified=true;
                     mongo().then( (db) => {
-                        //TODO should make sure group doesnt allready exist here.
-                        db.collection("resourcetypes").find({name : json.name, group : json.group}).toArray((err, result) => {
+                        db.collection("resourcetypes").find({$and : [{name : json.name},{group : json.group}]}).toArray((err, result) => {
                             console.log("RES: " + result);
-                            console.log("ERR: " + err);
                             if(err == null && !result.length)   //if theres not an error and a type with that name was not found for the group
                             {
-                                //{"name" : json.name, "group" : json.group, "properties": json.properties}
                                 console.log(new resourceType(json.name, json.group, json.properties));
                                 db.collection("resourcetypes").insertOne(
                                     new resourceType(json.name, json.group, json.properties)
                                 );
                                 resJSON.success = true;
-                                db.collection("resourcetypes").find({name : json.name}).toArray((err, result) => {
+                                db.collection("resourcetypes").find({$and : [{name : json.name},{group : json.group}]}).toArray((err, result) => {
                                     if(err == null)
                                     {
                                         resJSON.type = result;
