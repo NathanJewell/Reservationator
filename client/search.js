@@ -197,7 +197,7 @@ request(getTypeJSON, (data) => {
 	var dataJSON = JSON.parse(data);
 	var typeoption = "";
 	for(type in dataJSON.types) {
-		typeoptions += "<option>" + dataJSON.types[type] + "</option>";
+		typeoptions += "<option>" + dataJSON.types[type].name + "</option>";
 	}
 	$("#typeoptions").append(typeoptions);
 }, (err) => {
@@ -244,13 +244,15 @@ function setupForms() {
     {
         "event" : "createresourcetype",
         "name" : ["text", ["name"]],
+        "description" : ["text"],
         "properties" : ["text"],
         "Create Resource Type" : ["button", ["maketypebtn"]]
     }
     var formJSON3 = //form for making a resource instance
     {
-        "event" : "createresourceinstance",
-        "typename" : ["text", ["type"]],
+        "event" : "createresource",
+        "type" : ["text"],
+        "properties" : ["text"],
         "Create Resource" : ["button", ["makeresourcebtn"]]
     }
 
@@ -281,8 +283,8 @@ function setupForms() {
     $("#maketypebtn").on("click", ()=> {
         reqForm("#maketype", formJSON2, "created new resource type", "resource type not created");
     });
-    $("makeresourcebtn").on("click", ()=> {
-        reqForm("makeresource", formJSON3, "created new resource instance", "resource instance creation failed");
+    $("#makeresourcebtn").on("click", ()=> {
+        reqForm("#makeresource", formJSON3, "created new resource instance", "resource instance creation failed");
     });
 }
 

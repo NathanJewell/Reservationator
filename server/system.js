@@ -44,6 +44,8 @@ function schedule(name) {
     }
 }
 
+function reservation(type, period)
+
 var epoch = new Date().getTime();
 var datetime = Date(epoch).split(" ");
 var date = {

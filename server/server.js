@@ -178,9 +178,9 @@ function listener(request, response) {  //big boi function for server handling
                             console.log("RES: " + result);
                             if(err == null && !result.length)   //if theres not an error and a type with that name was not found for the group
                             {
-                                console.log(new resourceType(json.name, json.group, json.properties));
+                                console.log(new resourceType(json.name, json.group, json.description, json.properties));
                                 db.collection("resourcetypes").insertOne(
-                                    new resourceType(json.name, json.group, json.properties)
+                                    new resourceType(json.name, json.group, json.description,  json.properties)
                                 );
                                 resJSON.success = true;
                                 db.collection("resourcetypes").find({$and : [{name : json.name},{group : json.group}]}).toArray((err, result) => {
@@ -238,6 +238,7 @@ function listener(request, response) {  //big boi function for server handling
                         resJSON.success = true;
                         resJSON.types = result;
                     }
+                    console.log(resJSON);
                     response.end(JSON.stringify(resJSON));
                 });
             });
@@ -245,6 +246,12 @@ function listener(request, response) {  //big boi function for server handling
         else {
             var resJSON = {"pung" : "true"};
             response.end(JSON.stringify(resJSON));
+        }
+        else if (json.event == "findreservations") {
+            var resJSON = {verified : false, success : false};
+            mongo().then( (db) => {
+                db.collection("reservations").find({group : json.group, })
+            })
         }
 
 
